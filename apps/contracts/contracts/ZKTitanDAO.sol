@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 
-contract Feedback {
+contract ZKTitanDAO {
     ISemaphore public semaphore;
 
     uint256 public groupId;

@@ -74,7 +74,7 @@ const titan_goerli: Chain = {
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [mainnet, goerli, titan_goerli],
+    [goerli, titan_goerli],
     [alchemyProvider({ apiKey: "yourAlchemyApiKey" }), publicProvider()]
 )
 

@@ -17,15 +17,15 @@ task("deploy", "Deploy a Feedback contract")
             groupId = process.env.GROUP_ID
         }
 
-        const FeedbackFactory = await ethers.getContractFactory("Feedback")
+        const zkTitanDAOFactory = await ethers.getContractFactory("ZKTitanDAO")
 
-        const feedbackContract = await FeedbackFactory.deploy(semaphoreAddress, groupId)
+        const ZkTitanDAOContract = await zkTitanDAOFactory.deploy(semaphoreAddress, groupId)
 
-        await feedbackContract.deployed()
+        await ZkTitanDAOContract.deployed()
 
         if (logs) {
-            console.info(`Feedback contract has been deployed to: ${feedbackContract.address}`)
+            console.info(`Feedback contract has been deployed to: ${ZkTitanDAOContract.address}`)
         }
 
-        return feedbackContract
+        return ZkTitanDAOContract
     })
