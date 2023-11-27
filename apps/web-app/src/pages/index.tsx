@@ -2,32 +2,28 @@ import { Box, Button, Divider, Heading, HStack, Link, ListItem, OrderedList, Tex
 import { Identity } from "@semaphore-protocol/identity"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
+import { useSignMessage } from "wagmi"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
-import IconRefreshLine from "../icons/IconRefreshLine"
 
 export default function IdentitiesPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
     const [_identity, setIdentity] = useState<Identity>()
+    const { signMessageAsync } = useSignMessage()
 
     useEffect(() => {
-        const identityString = localStorage.getItem("identity")
-
-        if (identityString) {
-            const identity = new Identity(identityString)
-
-            setIdentity(identity)
-
-            setLogs("Your Semaphore identity was retrieved from the browser cache 👌🏽")
-        } else {
-            setLogs("Create your Semaphore identity 👆🏽")
-        }
     }, [])
 
     const createIdentity = useCallback(async () => {
-        const identity = new Identity()
+        const signMessage = await signMessageAsync({
+            message: "Hi this is for identity"
+        })
+
+        console.log(signMessage)
+
+        const identity = new Identity(signMessage)
 
         setIdentity(identity)
 
@@ -61,11 +57,6 @@ export default function IdentitiesPage() {
                 <Text fontWeight="bold" fontSize="lg">
                     Identity
                 </Text>
-                {_identity && (
-                    <Button leftIcon={<IconRefreshLine />} variant="link" color="text.700" onClick={createIdentity}>
-                        New
-                    </Button>
-                )}
             </HStack>
 
             {_identity ? (
@@ -90,7 +81,7 @@ export default function IdentitiesPage() {
                         justifyContent="left"
                         colorScheme="primary"
                         px="4"
-                        onClick={createIdentity}
+                        onClick={() => createIdentity()}
                         leftIcon={<IconAddCircleFill />}
                     >
                         Create identity

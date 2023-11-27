@@ -1,17 +1,106 @@
-import { ChakraProvider, Container, HStack, Icon, IconButton, Link, Spinner, Stack, Text } from "@chakra-ui/react"
-import { SupportedNetwork } from "@semaphore-protocol/data"
+/* eslint-disable import/no-duplicates */
+import { ChakraProvider, Container, HStack, Spinner, Stack, Text } from "@chakra-ui/react"
+
+import { WagmiConfig, createConfig, configureChains, Chain } from 'wagmi'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { publicProvider } from 'wagmi/providers/public'
+import {mainnet, goerli} from 'wagmi/chains'
+import '@rainbow-me/rainbowkit/styles.css'
+import {RainbowKitProvider, getDefaultWallets, } from '@rainbow-me/rainbowkit'
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+// import { SupportedNetwork } from "@semaphore-protocol/data"
 import type { AppProps } from "next/app"
-import getNextConfig from "next/config"
+// import getNextConfig from "next/config"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import { FaGithub } from "react-icons/fa"
 import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
 import useSemaphore from "../hooks/useSemaphore"
 import theme from "../styles/index"
 
-const { publicRuntimeConfig: env } = getNextConfig()
+/*
+const titan: Chain = {
+    id: 55004,
+    name: "Titan",
+    network: "Titan",
+    nativeCurrency: {
+      decimals: 18,
+      name: "ETH",
+      symbol: "ETH",
+    },
+    rpcUrls: {
+      public: { http: [process.env.NEXT_PUBLIC_TITAN_RPC as string] },
+      default: { http: [process.env.NEXT_PUBLIC_TITAN_RPC as string] },
+    },
+    blockExplorers: {
+      etherscan: {
+        name: "Titan Mainnet Explorer",
+        url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string,
+      },
+      default: {
+        name: "Titan Mainnet Explorer",
+        url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string,
+      },
+    },
+}
+*/
+
+const titan_goerli: Chain = {
+    id: 5050,
+    name: "Titan Goerli",
+    network: "Titan Goerli",
+    nativeCurrency: {
+        decimals: 18,
+        name: "ETH",
+        symbol: "ETH",
+    },
+    rpcUrls: {
+        public: { http: ["https://goerli.optimism.tokamak.network"] },
+        default: { http: ["https://goerli.optimism.tokamak.network"] },
+      },
+      blockExplorers: {
+        etherscan: {
+          name: "BlockScout",
+          url: "https://goerli.explorer.tokamak.network/",
+        },
+        default: {
+          name: "BlockScout",
+          url: "https://goerli.explorer.tokamak.network/",
+        },
+      },
+}
+
+// Configure chains & providers with the Alchemy provider.
+// Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+    [
+        mainnet,
+        goerli,
+        titan_goerli
+    ],
+    [alchemyProvider({ apiKey: 'yourAlchemyApiKey' }), publicProvider()]
+)
+
+const projectId = 'zkTitanDAO'
+
+
+const { connectors } = getDefaultWallets({
+    appName: 'RainbowKit demo',
+    projectId,
+    chains,
+})
+
+
+
+// Set up wagmi config
+const wagmiConfig = createConfig({
+    autoConnect: true,
+    connectors,
+    publicClient,
+    webSocketPublicClient,
+  });
+
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter()
@@ -23,21 +112,19 @@ export default function App({ Component, pageProps }: AppProps) {
         semaphore.refreshFeedback()
     }, [])
 
-    function shortenAddress(address: string) {
-        return `${address.slice(0, 6)}...${address.slice(-4)}`
-    }
+    // function getExplorerLink(network: SupportedNetwork, address: string) {
+    //     switch (network) {
+    //         case "goerli":
+    //         case "sepolia":
+    //             return `https://${network}.etherscan.io/address/${address}`
+    //         case "arbitrum-goerli":
+    //             return `https://goerli.arbiscan.io/address/${address}`
+    //         default:
+    //             return ""
+    //     }
+    // }
 
-    function getExplorerLink(network: SupportedNetwork, address: string) {
-        switch (network) {
-            case "goerli":
-            case "sepolia":
-                return `https://${network}.etherscan.io/address/${address}`
-            case "arbitrum-goerli":
-                return `https://goerli.arbiscan.io/address/${address}`
-            default:
-                return ""
-        }
-    }
+    // console.log(signMessage)
 
     return (
         <>
@@ -50,15 +137,13 @@ export default function App({ Component, pageProps }: AppProps) {
                 <link rel="manifest" href="/manifest.json" />
                 <meta name="theme-color" content="#ebedff" />
             </Head>
-
             <ChakraProvider theme={theme}>
+                <WagmiConfig config={wagmiConfig}>
+                    <RainbowKitProvider chains={chains}>
                 <HStack align="center" justify="right" p="2">
-                    <Link href={getExplorerLink(env.DEFAULT_NETWORK, env.FEEDBACK_CONTRACT_ADDRESS)} isExternal>
-                        <Text>{shortenAddress(env.FEEDBACK_CONTRACT_ADDRESS)}</Text>
-                    </Link>
-                    <Link href="https://github.com/semaphore-protocol/boilerplate" isExternal>
-                        <IconButton aria-label="Github repository" icon={<Icon boxSize={6} as={FaGithub} />} />
-                    </Link>
+                    <div style={{display: 'flex', justifyContent: 'flex-end', padding: 12}}>
+                        <ConnectButton/>
+                    </div>
                 </HStack>
 
                 <Container maxW="lg" flex="1" display="flex" alignItems="center">
@@ -88,6 +173,8 @@ export default function App({ Component, pageProps }: AppProps) {
                     {_logs.endsWith("...") && <Spinner color="primary.400" />}
                     <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
                 </HStack>
+                </RainbowKitProvider>
+                </WagmiConfig>
             </ChakraProvider>
         </>
     )
