@@ -1,10 +1,9 @@
 import { task, types } from "hardhat/config"
 
-task("deploy", "Deploy a Feedback contract")
+task("deploy", "Deploy a zkTitanDAO contract")
     .addOptionalParam("semaphore", "Semaphore contract address", undefined, types.string)
-    .addOptionalParam("group", "Group id", "42", types.string)
     .addOptionalParam("logs", "Print the logs", true, types.boolean)
-    .setAction(async ({ logs, semaphore: semaphoreAddress, group: groupId }, { ethers, run }) => {
+    .setAction(async ({ logs, semaphore: semaphoreAddress }, { ethers, run }) => {
         if (!semaphoreAddress) {
             const { semaphore } = await run("deploy:semaphore", {
                 logs
@@ -13,19 +12,15 @@ task("deploy", "Deploy a Feedback contract")
             semaphoreAddress = semaphore.address
         }
 
-        if (!groupId) {
-            groupId = process.env.GROUP_ID
-        }
+        const zkTitanDAOFactory = await ethers.getContractFactory("ZKTitanDAO")
 
-        const FeedbackFactory = await ethers.getContractFactory("Feedback")
+        const ZkTitanDAOContract = await zkTitanDAOFactory.deploy(semaphoreAddress)
 
-        const feedbackContract = await FeedbackFactory.deploy(semaphoreAddress, groupId)
-
-        await feedbackContract.deployed()
+        await ZkTitanDAOContract.deployed()
 
         if (logs) {
-            console.info(`Feedback contract has been deployed to: ${feedbackContract.address}`)
+            console.info(`zkTitanDAO contract has been deployed to: ${ZkTitanDAOContract.address}`)
         }
 
-        return feedbackContract
+        return ZkTitanDAOContract
     })

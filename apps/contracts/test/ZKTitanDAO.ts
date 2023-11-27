@@ -5,11 +5,11 @@ import { expect } from "chai"
 import { formatBytes32String } from "ethers/lib/utils"
 import { run } from "hardhat"
 // @ts-ignore: typechain folder will be generated after contracts compilation
-import { Feedback } from "../build/typechain"
+import { ZKTitanDAO } from "../build/typechain"
 import { config } from "../package.json"
 
 describe("Feedback", () => {
-    let feedbackContract: Feedback
+    let ZKTitanDAOContract: ZKTitanDAO
     let semaphoreContract: string
 
     const groupId = "42"
@@ -21,7 +21,7 @@ describe("Feedback", () => {
             logs: false
         })
 
-        feedbackContract = await run("deploy", { logs: false, group: groupId, semaphore: semaphore.address })
+        ZKTitanDAOContract = await run("deploy", { logs: false, group: groupId, semaphore: semaphore.address })
         semaphoreContract = semaphore
 
         users.push(new Identity())
@@ -31,7 +31,7 @@ describe("Feedback", () => {
     describe("# joinGroup", () => {
         it("Should allow users to join the group", async () => {
             for await (const [i, user] of users.entries()) {
-                const transaction = feedbackContract.joinGroup(user.commitment)
+                const transaction = ZKTitanDAOContract.joinGroup(user.commitment)
 
                 group.addMember(user.commitment)
 
@@ -54,7 +54,7 @@ describe("Feedback", () => {
                 zkeyFilePath
             })
 
-            const transaction = feedbackContract.sendFeedback(
+            const transaction = ZKTitanDAOContract.sendFeedback(
                 feedback,
                 fullProof.merkleTreeRoot,
                 fullProof.nullifierHash,

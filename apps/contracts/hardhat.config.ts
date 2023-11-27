@@ -28,6 +28,11 @@ function getNetworks(): NetworksUserConfig {
             chainId: 5,
             accounts
         },
+        titan_goerli: {
+            url: "https://goerli.optimisim.tokamak.network",
+            chainId: 5050,
+            accounts
+        },
         sepolia: {
             url: `https://sepolia.infura.io/v3/${infuraApiKey}`,
             chainId: 11155111,

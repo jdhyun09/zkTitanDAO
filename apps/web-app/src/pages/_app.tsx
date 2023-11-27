@@ -4,7 +4,7 @@ import { ChakraProvider, Container, HStack, Spinner, Stack, Text } from "@chakra
 import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { publicProvider } from "wagmi/providers/public"
-import { mainnet, goerli } from "wagmi/chains"
+import { goerli } from "wagmi/chains"
 import "@rainbow-me/rainbowkit/styles.css"
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
@@ -74,7 +74,7 @@ const titan_goerli: Chain = {
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [mainnet, goerli, titan_goerli],
+    [goerli, titan_goerli],
     [alchemyProvider({ apiKey: "yourAlchemyApiKey" }), publicProvider()]
 )
 
