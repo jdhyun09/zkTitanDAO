@@ -51,8 +51,8 @@ contract ZKTitanDAO {
     }
 
     function refreashTitanDAO() external onlyOwner {
-        // Todo: change to assembly 
-        for(uint256 i = 0; i < titanDAO.length; i++) {
+        // Todo: change to assembly
+        for (uint256 i = 0; i < titanDAO.length; i++) {
             titanDAO[i] += titanDAO.length;
         }
 
