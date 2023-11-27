@@ -13,8 +13,7 @@ export default function IdentitiesPage() {
     const [_identity, setIdentity] = useState<Identity>()
     const { signMessageAsync } = useSignMessage()
 
-    useEffect(() => {
-    }, [])
+    useEffect(() => {}, [])
 
     const createIdentity = useCallback(async () => {
         const signMessage = await signMessageAsync({

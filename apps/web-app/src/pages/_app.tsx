@@ -1,12 +1,12 @@
 /* eslint-disable import/no-duplicates */
 import { ChakraProvider, Container, HStack, Spinner, Stack, Text } from "@chakra-ui/react"
 
-import { WagmiConfig, createConfig, configureChains, Chain } from 'wagmi'
-import { alchemyProvider } from 'wagmi/providers/alchemy'
-import { publicProvider } from 'wagmi/providers/public'
-import {mainnet, goerli} from 'wagmi/chains'
-import '@rainbow-me/rainbowkit/styles.css'
-import {RainbowKitProvider, getDefaultWallets, } from '@rainbow-me/rainbowkit'
+import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
+import { alchemyProvider } from "wagmi/providers/alchemy"
+import { publicProvider } from "wagmi/providers/public"
+import { mainnet, goerli } from "wagmi/chains"
+import "@rainbow-me/rainbowkit/styles.css"
+import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 // import { SupportedNetwork } from "@semaphore-protocol/data"
 import type { AppProps } from "next/app"
@@ -53,54 +53,46 @@ const titan_goerli: Chain = {
     nativeCurrency: {
         decimals: 18,
         name: "ETH",
-        symbol: "ETH",
+        symbol: "ETH"
     },
     rpcUrls: {
         public: { http: ["https://goerli.optimism.tokamak.network"] },
-        default: { http: ["https://goerli.optimism.tokamak.network"] },
-      },
-      blockExplorers: {
+        default: { http: ["https://goerli.optimism.tokamak.network"] }
+    },
+    blockExplorers: {
         etherscan: {
-          name: "BlockScout",
-          url: "https://goerli.explorer.tokamak.network/",
+            name: "BlockScout",
+            url: "https://goerli.explorer.tokamak.network/"
         },
         default: {
-          name: "BlockScout",
-          url: "https://goerli.explorer.tokamak.network/",
-        },
-      },
+            name: "BlockScout",
+            url: "https://goerli.explorer.tokamak.network/"
+        }
+    }
 }
 
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [
-        mainnet,
-        goerli,
-        titan_goerli
-    ],
-    [alchemyProvider({ apiKey: 'yourAlchemyApiKey' }), publicProvider()]
+    [mainnet, goerli, titan_goerli],
+    [alchemyProvider({ apiKey: "yourAlchemyApiKey" }), publicProvider()]
 )
 
-const projectId = 'zkTitanDAO'
-
+const projectId = "zkTitanDAO"
 
 const { connectors } = getDefaultWallets({
-    appName: 'RainbowKit demo',
+    appName: "RainbowKit demo",
     projectId,
-    chains,
+    chains
 })
-
-
 
 // Set up wagmi config
 const wagmiConfig = createConfig({
     autoConnect: true,
     connectors,
     publicClient,
-    webSocketPublicClient,
-  });
-
+    webSocketPublicClient
+})
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter()
@@ -140,40 +132,40 @@ export default function App({ Component, pageProps }: AppProps) {
             <ChakraProvider theme={theme}>
                 <WagmiConfig config={wagmiConfig}>
                     <RainbowKitProvider chains={chains}>
-                <HStack align="center" justify="right" p="2">
-                    <div style={{display: 'flex', justifyContent: 'flex-end', padding: 12}}>
-                        <ConnectButton/>
-                    </div>
-                </HStack>
+                        <HStack align="center" justify="right" p="2">
+                            <div style={{ display: "flex", justifyContent: "flex-end", padding: 12 }}>
+                                <ConnectButton />
+                            </div>
+                        </HStack>
 
-                <Container maxW="lg" flex="1" display="flex" alignItems="center">
-                    <Stack py="8" display="flex" width="100%">
-                        <SemaphoreContext.Provider value={semaphore}>
-                            <LogsContext.Provider
-                                value={{
-                                    _logs,
-                                    setLogs
-                                }}
-                            >
-                                <Component {...pageProps} />
-                            </LogsContext.Provider>
-                        </SemaphoreContext.Provider>
-                    </Stack>
-                </Container>
+                        <Container maxW="lg" flex="1" display="flex" alignItems="center">
+                            <Stack py="8" display="flex" width="100%">
+                                <SemaphoreContext.Provider value={semaphore}>
+                                    <LogsContext.Provider
+                                        value={{
+                                            _logs,
+                                            setLogs
+                                        }}
+                                    >
+                                        <Component {...pageProps} />
+                                    </LogsContext.Provider>
+                                </SemaphoreContext.Provider>
+                            </Stack>
+                        </Container>
 
-                <HStack
-                    flexBasis="56px"
-                    borderTop="1px solid #8f9097"
-                    backgroundColor="#DAE0FF"
-                    align="center"
-                    justify="center"
-                    spacing="4"
-                    p="4"
-                >
-                    {_logs.endsWith("...") && <Spinner color="primary.400" />}
-                    <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
-                </HStack>
-                </RainbowKitProvider>
+                        <HStack
+                            flexBasis="56px"
+                            borderTop="1px solid #8f9097"
+                            backgroundColor="#DAE0FF"
+                            align="center"
+                            justify="center"
+                            spacing="4"
+                            p="4"
+                        >
+                            {_logs.endsWith("...") && <Spinner color="primary.400" />}
+                            <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
+                        </HStack>
+                    </RainbowKitProvider>
                 </WagmiConfig>
             </ChakraProvider>
         </>
