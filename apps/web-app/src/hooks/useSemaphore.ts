@@ -48,7 +48,17 @@ export default function useSemaphore(): SemaphoreContextType {
         const proofs = await semaphore.getGroupVerifiedProofs(_groupId)
 
         setFeedback(proofs.map(({ signal }: any) => utils.parseBytes32String(BigNumber.from(signal).toHexString())))
-    }, [])
+    }, [_groupId])
+
+    const refreshFeedbackFunc = async (): Promise<void> => {
+        const semaphore = new SemaphoreEthers(ethereumNetwork, {
+            address: env.SEMAPHORE_CONTRACT_ADDRESS
+        })
+
+        const proofs = await semaphore.getGroupVerifiedProofs(_groupId)
+
+        setFeedback(proofs.map(({ signal }: any) => utils.parseBytes32String(BigNumber.from(signal).toHexString())))
+    }
 
     const addFeedback = useCallback(
         (feedback: string) => {
@@ -60,11 +70,13 @@ export default function useSemaphore(): SemaphoreContextType {
     return {
         _users,
         _feedback,
+        _groupId,
         refreshUsers,
         addUser,
         refreshFeedback,
         addFeedback,
         setGroupId,
-        refreshUsersFunc
+        refreshUsersFunc,
+        refreshFeedbackFunc
     }
 }

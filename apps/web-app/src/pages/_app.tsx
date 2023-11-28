@@ -5,6 +5,7 @@ import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { publicProvider } from "wagmi/providers/public"
 import { goerli } from "wagmi/chains"
+import { useAccount } from "wagmi"
 import "@rainbow-me/rainbowkit/styles.css"
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
@@ -102,7 +103,7 @@ export default function App({ Component, pageProps }: AppProps) {
     useEffect(() => {
         semaphore.refreshUsers()
         semaphore.refreshFeedback()
-    }, [])
+    }, [semaphore._groupId])
 
     // function getExplorerLink(network: SupportedNetwork, address: string) {
     //     switch (network) {

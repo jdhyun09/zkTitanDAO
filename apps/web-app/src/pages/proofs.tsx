@@ -3,6 +3,7 @@ import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
 import { generateProof } from "@semaphore-protocol/proof"
 import { BigNumber, utils } from "ethers"
+import { useAccount } from "wagmi"
 import getNextConfig from "next/config"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
@@ -18,9 +19,27 @@ const { publicRuntimeConfig: env } = getNextConfig()
 export default function ProofsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
-    const { _users, _feedback, refreshFeedback, addFeedback } = useContext(SemaphoreContext)
+    const { _users, _feedback, _groupId, refreshFeedback, addFeedback, refreshFeedbackFunc } =
+        useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
+    const { address } = useAccount()
+    const [prevAddress, setPrevAddress] = useState<string>("")
+
+    useEffect(() => {
+        if (!address) {
+            return
+        }
+
+        if (!prevAddress) {
+            setPrevAddress(address?.toString())
+            return
+        }
+
+        if (address.toString() !== prevAddress) {
+            router.push("/")
+        }
+    }, [address])
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")
@@ -39,7 +58,11 @@ export default function ProofsPage() {
         }
     }, [_feedback])
 
-    const sendFeedback = useCallback(async () => {
+    const loadFeedback = useCallback(async () => {
+        await refreshFeedbackFunc()
+    }, [_feedback])
+
+    const sendFeedback = async () => {
         if (!_identity) {
             return
         }
@@ -52,22 +75,18 @@ export default function ProofsPage() {
             setLogs(`Posting your anonymous feedback...`)
 
             try {
-                const group = new Group(env.GROUP_ID, 20, _users)
+                const group = new Group(_groupId, 20, _users)
 
                 const signal = BigNumber.from(utils.formatBytes32String(feedback)).toString()
 
-                const { proof, merkleTreeRoot, nullifierHash } = await generateProof(
-                    _identity,
-                    group,
-                    env.GROUP_ID,
-                    signal
-                )
+                const { proof, merkleTreeRoot, nullifierHash } = await generateProof(_identity, group, _groupId, signal)
 
                 const response = await fetch("api/ZKTitanDAO", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         feedback: signal,
+                        groupId: _groupId,
                         merkleTreeRoot,
                         nullifierHash,
                         proof
@@ -89,7 +108,7 @@ export default function ProofsPage() {
                 setLoading.off()
             }
         }
-    }, [_identity])
+    }
 
     return (
         <>
@@ -112,7 +131,7 @@ export default function ProofsPage() {
                 <Text fontWeight="bold" fontSize="lg">
                     Feedback signals ({_feedback.length})
                 </Text>
-                <Button leftIcon={<IconRefreshLine />} variant="link" color="text.700" onClick={refreshFeedback}>
+                <Button leftIcon={<IconRefreshLine />} variant="link" color="text.700" onClick={loadFeedback}>
                     Refresh
                 </Button>
             </HStack>

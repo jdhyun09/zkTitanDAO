@@ -1,10 +1,9 @@
 import { Box, Button, Divider, Heading, HStack, Link, Text, useBoolean, VStack } from "@chakra-ui/react"
 import { Identity } from "@semaphore-protocol/identity"
-import { SemaphoreEthers } from "@semaphore-protocol/data"
+import { useAccount } from "wagmi"
 import getNextConfig from "next/config"
 import { useRouter } from "next/router"
-import { useCallback, useContext, useEffect, useState } from "react"
-import ZKTitanDAO from "../../contract-artifacts/ZKTitanDAO.json"
+import { useContext, useEffect, useState } from "react"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
@@ -19,6 +18,23 @@ export default function GroupsPage() {
     const { _users, refreshUsers, addUser, setGroupId, refreshUsersFunc } = useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
+    const { address } = useAccount()
+    const [prevAddress, setPrevAddress] = useState<string>("")
+
+    useEffect(() => {
+        if (!address) {
+            return
+        }
+
+        if (!prevAddress) {
+            setPrevAddress(address?.toString())
+            return
+        }
+
+        if (address.toString() !== prevAddress) {
+            router.push("/")
+        }
+    }, [address])
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")

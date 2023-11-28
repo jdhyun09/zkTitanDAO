@@ -2,7 +2,7 @@ import { Box, Button, Divider, Heading, HStack, Link, ListItem, OrderedList, Tex
 import { Identity } from "@semaphore-protocol/identity"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
-import { useSignMessage } from "wagmi"
+import { useAccount, useSignMessage } from "wagmi"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
@@ -12,15 +12,24 @@ export default function IdentitiesPage() {
     const { setLogs } = useContext(LogsContext)
     const [_identity, setIdentity] = useState<Identity>()
     const { signMessageAsync } = useSignMessage()
+    const { address } = useAccount()
+    const [prevAddress, setPrevAddress] = useState<string>("")
 
-    useEffect(() => {}, [])
+    useEffect(() => {
+        if (!address) {
+            return
+        }
+
+        if (address?.toString() !== prevAddress) {
+            setIdentity(undefined)
+            setPrevAddress(address?.toString())
+        }
+    }, [address])
 
     const createIdentity = useCallback(async () => {
         const signMessage = await signMessageAsync({
-            message: "Hi this is for identity"
+            message: "Hii this is for identity"
         })
-
-        console.log(signMessage)
 
         const identity = new Identity(signMessage)
 
