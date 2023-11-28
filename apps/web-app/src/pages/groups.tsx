@@ -1,9 +1,10 @@
 import { Box, Button, Divider, Heading, HStack, Link, Text, useBoolean, VStack } from "@chakra-ui/react"
 import { Identity } from "@semaphore-protocol/identity"
+import { SemaphoreEthers } from "@semaphore-protocol/data"
 import getNextConfig from "next/config"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
-import Feedback from "../../contract-artifacts/Feedback.json"
+import ZKTitanDAO from "../../contract-artifacts/ZKTitanDAO.json"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
@@ -15,7 +16,7 @@ const { publicRuntimeConfig: env } = getNextConfig()
 export default function GroupsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
-    const { _users, refreshUsers, addUser } = useContext(SemaphoreContext)
+    const { _users, refreshUsers, addUser, setGroupId, refreshUsersFunc } = useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
 
@@ -36,49 +37,41 @@ export default function GroupsPage() {
         }
     }, [_users])
 
-    const joinGroup = useCallback(async () => {
+    const userHasJoined = (identity: Identity) => _users.includes(identity.commitment.toString())
+
+    const joinGroup = async (groupName: string, id: string) => {
         if (!_identity) {
             return
         }
 
         setLoading.on()
-        setLogs(`Joining the Feedback group...`)
+        setLogs(`Joining the ${groupName} group...`)
 
-        let response: any
+        setGroupId(id)
 
-        if (env.OPENZEPPELIN_AUTOTASK_WEBHOOK) {
-            response = await fetch(env.OPENZEPPELIN_AUTOTASK_WEBHOOK, {
+        await refreshUsersFunc(id)
+
+        if (!userHasJoined(_identity)) {
+            const response = await fetch("api/join", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    abi: Feedback.abi,
-                    address: env.FEEDBACK_CONTRACT_ADDRESS,
-                    functionName: "joinGroup",
-                    functionParameters: [_identity.commitment.toString()]
+                    identityCommitment: _identity.commitment.toString(),
+                    groupId: id
                 })
             })
-        } else {
-            response = await fetch("api/join", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    identityCommitment: _identity.commitment.toString()
-                })
-            })
-        }
 
-        if (response.status === 200) {
-            addUser(_identity.commitment.toString())
+            if (response.status === 200) {
+                addUser(_identity.commitment.toString())
 
-            setLogs(`You joined the Feedback group event 🎉 Share your feedback anonymously!`)
-        } else {
-            setLogs("Some error occurred, please try again!")
+                setLogs(`You joined the ${groupName} group Successfully! Share your feedback anonymously🥷`)
+            } else {
+                setLogs("Some error occurred, please try again!")
+            }
         }
 
         setLoading.off()
-    }, [_identity])
-
-    const userHasJoined = useCallback((identity: Identity) => _users.includes(identity.commitment.toString()), [_users])
+    }
 
     return (
         <>
@@ -113,11 +106,39 @@ export default function GroupsPage() {
                     justifyContent="left"
                     colorScheme="primary"
                     px="4"
-                    onClick={joinGroup}
-                    isDisabled={_loading || !_identity || userHasJoined(_identity)}
+                    onClick={() => joinGroup("Anyone", "0")}
+                    isDisabled={_loading || !_identity}
                     leftIcon={<IconAddCircleFill />}
                 >
-                    Join group
+                    Join Anyone Group
+                </Button>
+            </Box>
+            <Box pb="5">
+                <Button
+                    w="100%"
+                    fontWeight="bold"
+                    justifyContent="left"
+                    colorScheme="primary"
+                    px="4"
+                    onClick={() => joinGroup("Ton holders", "1")}
+                    isDisabled={_loading || !_identity}
+                    leftIcon={<IconAddCircleFill />}
+                >
+                    Join Ton holders Group
+                </Button>
+            </Box>
+            <Box pb="5">
+                <Button
+                    w="100%"
+                    fontWeight="bold"
+                    justifyContent="left"
+                    colorScheme="primary"
+                    px="4"
+                    onClick={() => joinGroup("Titan NFT", "2")}
+                    isDisabled={_loading || !_identity}
+                    leftIcon={<IconAddCircleFill />}
+                >
+                    Join Titan NFT Group
                 </Button>
             </Box>
 

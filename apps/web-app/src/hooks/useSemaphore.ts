@@ -11,16 +11,27 @@ const ethereumNetwork = env.DEFAULT_NETWORK === "localhost" ? "http://localhost:
 export default function useSemaphore(): SemaphoreContextType {
     const [_users, setUsers] = useState<any[]>([])
     const [_feedback, setFeedback] = useState<string[]>([])
+    const [_groupId, setGroupId] = useState<string>("0")
 
     const refreshUsers = useCallback(async (): Promise<void> => {
         const semaphore = new SemaphoreEthers(ethereumNetwork, {
             address: env.SEMAPHORE_CONTRACT_ADDRESS
         })
 
-        const members = await semaphore.getGroupMembers(env.GROUP_ID)
+        const members = await semaphore.getGroupMembers(_groupId)
 
         setUsers(members)
     }, [])
+
+    const refreshUsersFunc = async (groupId: string): Promise<void> => {
+        const semaphore = new SemaphoreEthers(ethereumNetwork, {
+            address: env.SEMAPHORE_CONTRACT_ADDRESS
+        })
+
+        const members = await semaphore.getGroupMembers(groupId)
+
+        setUsers(members)
+    }
 
     const addUser = useCallback(
         (user: any) => {
@@ -34,7 +45,7 @@ export default function useSemaphore(): SemaphoreContextType {
             address: env.SEMAPHORE_CONTRACT_ADDRESS
         })
 
-        const proofs = await semaphore.getGroupVerifiedProofs(env.GROUP_ID)
+        const proofs = await semaphore.getGroupVerifiedProofs(_groupId)
 
         setFeedback(proofs.map(({ signal }: any) => utils.parseBytes32String(BigNumber.from(signal).toHexString())))
     }, [])
@@ -52,6 +63,8 @@ export default function useSemaphore(): SemaphoreContextType {
         refreshUsers,
         addUser,
         refreshFeedback,
-        addFeedback
+        addFeedback,
+        setGroupId,
+        refreshUsersFunc
     }
 }

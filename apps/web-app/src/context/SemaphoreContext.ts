@@ -7,6 +7,8 @@ export type SemaphoreContextType = {
     addUser: (user: string) => void
     refreshFeedback: () => Promise<void>
     addFeedback: (feedback: string) => void
+    setGroupId: (groupId: string) => void
+    refreshUsersFunc: (groupId: string) => Promise<void>
 }
 
 export default React.createContext<SemaphoreContextType>({
@@ -15,5 +17,7 @@ export default React.createContext<SemaphoreContextType>({
     refreshUsers: () => Promise.resolve(),
     addUser: () => {},
     refreshFeedback: () => Promise.resolve(),
-    addFeedback: () => {}
+    addFeedback: () => {},
+    setGroupId: () => {},
+    refreshUsersFunc: () => Promise.resolve()
 })
