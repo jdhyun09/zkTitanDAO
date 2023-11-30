@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
+import eligibleCheck from "../hooks/eligibleCheck"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
 import IconRefreshLine from "../icons/IconRefreshLine"
 
@@ -15,7 +16,7 @@ const { publicRuntimeConfig: env } = getNextConfig()
 export default function GroupsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
-    const { _users, refreshUsers, addUser, setGroupId, refreshUsersFunc } = useContext(SemaphoreContext)
+    const { _users, _groupId, refreshUsers, addUser, setGroupId, refreshUsersFunc } = useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
     const { address } = useAccount()
@@ -48,10 +49,25 @@ export default function GroupsPage() {
     }, [])
 
     useEffect(() => {
-        if (_users.length > 0) {
-            setLogs(`${_users.length} user${_users.length > 1 ? "s" : ""} retrieved from the group 🤙🏽`)
+        let groupName
+        switch (_groupId) {
+            case "0":
+                groupName = "AnyOne"
+                break
+            case "1":
+                groupName = "Ton holders"
+                break
+            case "2":
+                groupName = "Titan NFT"
+                break
+            default:
+                groupName = "??"
         }
-    }, [_users])
+
+        if (_users.length > 0) {
+            setLogs(`${_users.length} user${_users.length > 1 ? "s" : ""} retrieved from the ${groupName} group 🤙🏽`)
+        }
+    }, [_users, _groupId])
 
     const userHasJoined = (identity: Identity) => _users.includes(identity.commitment.toString())
 
@@ -67,7 +83,17 @@ export default function GroupsPage() {
 
         await refreshUsersFunc(id)
 
-        if (!userHasJoined(_identity)) {
+        const status = await eligibleCheck(id, prevAddress)
+        console.log(status)
+
+        if (!status) {
+            setLogs(`You are ineligible to join the ${groupName} group`)
+
+            setLoading.off()
+            return
+        }
+
+        if (!userHasJoined(_identity) && status) {
             const response = await fetch("api/join", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

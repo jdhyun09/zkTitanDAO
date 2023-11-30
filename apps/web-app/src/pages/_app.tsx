@@ -5,13 +5,12 @@ import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { publicProvider } from "wagmi/providers/public"
 import { goerli } from "wagmi/chains"
-import { useAccount } from "wagmi"
 import "@rainbow-me/rainbowkit/styles.css"
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 // import { SupportedNetwork } from "@semaphore-protocol/data"
 import type { AppProps } from "next/app"
-// import getNextConfig from "next/config"
+import getNextConfig from "next/config"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -20,7 +19,9 @@ import SemaphoreContext from "../context/SemaphoreContext"
 import useSemaphore from "../hooks/useSemaphore"
 import theme from "../styles/index"
 
-/*
+const { publicRuntimeConfig: env } = getNextConfig()
+
+
 const titan: Chain = {
     id: 55004,
     name: "Titan",
@@ -31,8 +32,8 @@ const titan: Chain = {
       symbol: "ETH",
     },
     rpcUrls: {
-      public: { http: [process.env.NEXT_PUBLIC_TITAN_RPC as string] },
-      default: { http: [process.env.NEXT_PUBLIC_TITAN_RPC as string] },
+      public: { http: ["https://rpc.titan.tokamak.network"] },
+      default: { http: ["https://rpc.titan.tokamak.network"] },
     },
     blockExplorers: {
       etherscan: {
@@ -45,7 +46,7 @@ const titan: Chain = {
       },
     },
 }
-*/
+
 
 const titan_goerli: Chain = {
     id: 5050,
@@ -57,8 +58,8 @@ const titan_goerli: Chain = {
         symbol: "ETH"
     },
     rpcUrls: {
-        public: { http: ["https://goerli.optimism.tokamak.network"] },
-        default: { http: ["https://goerli.optimism.tokamak.network"] }
+        public: { http: ["https://rpc.titan-goerli.tokamak.network"] },
+        default: { http: ["https://rpc.titan-goerli.tokamak.network"] }
     },
     blockExplorers: {
         etherscan: {
@@ -75,7 +76,7 @@ const titan_goerli: Chain = {
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [goerli, titan_goerli],
+    [goerli, titan_goerli, titan],
     [alchemyProvider({ apiKey: "yourAlchemyApiKey" }), publicProvider()]
 )
 
