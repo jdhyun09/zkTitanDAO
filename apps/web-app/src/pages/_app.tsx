@@ -21,32 +21,30 @@ import theme from "../styles/index"
 
 const { publicRuntimeConfig: env } = getNextConfig()
 
-
 const titan: Chain = {
     id: 55004,
     name: "Titan",
     network: "Titan",
     nativeCurrency: {
-      decimals: 18,
-      name: "ETH",
-      symbol: "ETH",
+        decimals: 18,
+        name: "ETH",
+        symbol: "ETH"
     },
     rpcUrls: {
-      public: { http: ["https://rpc.titan.tokamak.network"] },
-      default: { http: ["https://rpc.titan.tokamak.network"] },
+        public: { http: ["https://rpc.titan.tokamak.network"] },
+        default: { http: ["https://rpc.titan.tokamak.network"] }
     },
     blockExplorers: {
-      etherscan: {
-        name: "Titan Mainnet Explorer",
-        url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string,
-      },
-      default: {
-        name: "Titan Mainnet Explorer",
-        url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string,
-      },
-    },
+        etherscan: {
+            name: "Titan Mainnet Explorer",
+            url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
+        },
+        default: {
+            name: "Titan Mainnet Explorer",
+            url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
+        }
+    }
 }
-
 
 const titan_goerli: Chain = {
     id: 5050,

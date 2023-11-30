@@ -51,7 +51,7 @@ export default async function eligibleCheck(groupId: string, address: string): P
             console.log("anyone can pass")
             return { result: true }
         case "1":
-            if(!tonContract){
+            if (!tonContract) {
                 console.error("Error: ton contract is wrong")
                 return { result: false }
             }
@@ -60,7 +60,7 @@ export default async function eligibleCheck(groupId: string, address: string): P
                 const balance = await tonContract.balanceOf(address)
                 console.error(address)
                 console.error(ethers.utils.formatEther(balance))
-                console.log("Ton balance : ",balance)
+                console.log("Ton balance : ", balance)
                 const hasOneTon = parseFloat(ethers.utils.formatEther(balance)) >= 1
                 console.log(hasOneTon)
                 return { result: hasOneTon }
@@ -69,14 +69,14 @@ export default async function eligibleCheck(groupId: string, address: string): P
                 return { result: false }
             }
         case "2":
-            if(!titanNFTContract){
+            if (!titanNFTContract) {
                 console.error("Error: This network does not supported titan NFT holders group")
                 return { result: false }
             }
 
             try {
                 const balance = await titanNFTContract._ownedTokensCount(address)
-                console.log("NFT balance : ",balance)
+                console.log("NFT balance : ", balance)
                 const hasOneNFT = parseInt(ethers.utils.formatEther(balance), 10) >= 1
                 console.log(hasOneNFT)
                 return { result: hasOneNFT }
