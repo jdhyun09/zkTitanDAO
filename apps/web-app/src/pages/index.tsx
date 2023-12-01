@@ -16,7 +16,6 @@ export default function IdentitiesPage() {
     const [prevAddress, setPrevAddress] = useState<string>("")
     const { chain } = useNetwork()
 
-
     useEffect(() => {
         if (!address) {
             return
@@ -26,7 +25,7 @@ export default function IdentitiesPage() {
             return
         }
 
-        if(chain.id !== 5050){
+        if (chain.id !== 5050) {
             setLogs("you have to change to titan-goerli network")
             setIdentity(undefined)
         }

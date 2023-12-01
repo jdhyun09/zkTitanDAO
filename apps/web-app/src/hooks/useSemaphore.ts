@@ -5,7 +5,6 @@ import { SemaphoreContextType } from "../context/SemaphoreContext"
 import getGroupMembers from "./getData/getGroupMembers"
 import getGroupVerifiedProofs from "./getData/getGroupVerifiedProofs"
 
-
 export default function useSemaphore(): SemaphoreContextType {
     const [_users, setUsers] = useState<any[]>([])
     const [_feedback, setFeedback] = useState<string[]>([])

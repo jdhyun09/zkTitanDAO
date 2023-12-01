@@ -123,8 +123,10 @@ export default function App({ Component, pageProps }: AppProps) {
                         </Container>
 
                         <HStack align="center" justify="flex-end" p="2">
-                            <Link 
-                                href={"https://explorer.titan-goerli.tokamak.network/address/0x6A18DAf0b6109a2FaBB547b2cF0984FB36a8868F"} 
+                            <Link
+                                href={
+                                    "https://explorer.titan-goerli.tokamak.network/address/0x6A18DAf0b6109a2FaBB547b2cF0984FB36a8868F"
+                                }
                                 isExternal
                                 style={{
                                     border: "1px solid #8f9097",

@@ -62,7 +62,7 @@ export default async function eligibleCheck(groupId: string, address: string): P
             try {
                 const txCount = await provider.getTransactionCount(address)
                 console.log("transaction count : ", txCount)
-                return txCount >= 10 
+                return txCount >= 10
             } catch (error) {
                 console.error("Error checking transaction count:", error)
                 return false

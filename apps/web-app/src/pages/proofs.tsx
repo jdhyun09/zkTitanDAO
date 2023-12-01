@@ -27,7 +27,7 @@ export default function ProofsPage() {
             return
         }
 
-        if(!chain) {
+        if (!chain) {
             return
         }
 
@@ -70,8 +70,7 @@ export default function ProofsPage() {
         const feedback = prompt("Please enter your feedback:")
 
         if (feedback && _users) {
-
-            if(feedback.length > 32) {
+            if (feedback.length > 32) {
                 setLogs("🥲 Due to technical issues, feedback must be less than 32 characters.")
                 return
             }

@@ -10,7 +10,6 @@ import eligibleCheck from "../hooks/eligibleCheck"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
 import IconRefreshLine from "../icons/IconRefreshLine"
 
-
 export default function GroupsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
@@ -26,7 +25,7 @@ export default function GroupsPage() {
             return
         }
 
-        if(!chain){
+        if (!chain) {
             return
         }
 

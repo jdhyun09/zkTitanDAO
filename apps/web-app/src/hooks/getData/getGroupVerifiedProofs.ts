@@ -8,7 +8,7 @@ const { publicRuntimeConfig: env } = getNextConfig()
 const titanGoerliRPC = "https://rpc.titan-goerli.tokamak.network"
 const startBlock = 24100
 
-export default async function getGroupVerifiedProofs(groupId:string): Promise<any> {
+export default async function getGroupVerifiedProofs(groupId: string): Promise<any> {
     const provider = new providers.JsonRpcProvider(titanGoerliRPC)
     const contract = new Contract(env.SEMAPHORE_CONTRACT_ADDRESS, semaphoreABI, provider)
 
