@@ -2,13 +2,10 @@
 import { ChakraProvider, Container, HStack, Spinner, Stack, Text } from "@chakra-ui/react"
 
 import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
-import { alchemyProvider } from "wagmi/providers/alchemy"
 import { publicProvider } from "wagmi/providers/public"
-import { goerli } from "wagmi/chains"
 import "@rainbow-me/rainbowkit/styles.css"
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-// import { SupportedNetwork } from "@semaphore-protocol/data"
 import type { AppProps } from "next/app"
 import getNextConfig from "next/config"
 import Head from "next/head"
@@ -21,30 +18,30 @@ import theme from "../styles/index"
 
 const { publicRuntimeConfig: env } = getNextConfig()
 
-const titan: Chain = {
-    id: 55004,
-    name: "Titan",
-    network: "Titan",
-    nativeCurrency: {
-        decimals: 18,
-        name: "ETH",
-        symbol: "ETH"
-    },
-    rpcUrls: {
-        public: { http: ["https://rpc.titan.tokamak.network"] },
-        default: { http: ["https://rpc.titan.tokamak.network"] }
-    },
-    blockExplorers: {
-        etherscan: {
-            name: "Titan Mainnet Explorer",
-            url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
-        },
-        default: {
-            name: "Titan Mainnet Explorer",
-            url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
-        }
-    }
-}
+// const titan: Chain = {
+//     id: 55004,
+//     name: "Titan",
+//     network: "Titan",
+//     nativeCurrency: {
+//         decimals: 18,
+//         name: "ETH",
+//         symbol: "ETH"
+//     },
+//     rpcUrls: {
+//         public: { http: ["https://rpc.titan.tokamak.network"] },
+//         default: { http: ["https://rpc.titan.tokamak.network"] }
+//     },
+//     blockExplorers: {
+//         etherscan: {
+//             name: "Titan Mainnet Explorer",
+//             url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
+//         },
+//         default: {
+//             name: "Titan Mainnet Explorer",
+//             url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
+//         }
+//     }
+// }
 
 const titan_goerli: Chain = {
     id: 5050,
@@ -73,10 +70,7 @@ const titan_goerli: Chain = {
 
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [goerli, titan_goerli, titan],
-    [alchemyProvider({ apiKey: "yourAlchemyApiKey" }), publicProvider()]
-)
+const { chains, publicClient, webSocketPublicClient } = configureChains([titan_goerli], [publicProvider()])
 
 const projectId = "zkTitanDAO"
 

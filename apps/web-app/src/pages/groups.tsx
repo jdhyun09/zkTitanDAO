@@ -16,7 +16,7 @@ const { publicRuntimeConfig: env } = getNextConfig()
 export default function GroupsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
-    const { _users, _groupId, refreshUsers, addUser, setGroupId, refreshUsersFunc } = useContext(SemaphoreContext)
+    const { _users, refreshUsers, currentUsers, setGroupId, refreshUsersFunc } = useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
     const { address } = useAccount()
@@ -48,28 +48,7 @@ export default function GroupsPage() {
         setIdentity(new Identity(identityString))
     }, [])
 
-    useEffect(() => {
-        let groupName
-        switch (_groupId) {
-            case "0":
-                groupName = "AnyOne"
-                break
-            case "1":
-                groupName = "Ton holders"
-                break
-            case "2":
-                groupName = "Titan NFT"
-                break
-            default:
-                groupName = "??"
-        }
-
-        if (_users.length > 0) {
-            setLogs(`${_users.length} user${_users.length > 1 ? "s" : ""} retrieved from the ${groupName} group 🤙🏽`)
-        }
-    }, [_users, _groupId])
-
-    const userHasJoined = (identity: Identity) => _users.includes(identity.commitment.toString())
+    const userHasJoined = (identity: Identity) => currentUsers.current.includes(identity.commitment.toString())
 
     const joinGroup = async (groupName: string, id: string) => {
         if (!_identity) {
@@ -77,14 +56,21 @@ export default function GroupsPage() {
         }
 
         setLoading.on()
-        setLogs(`Joining the ${groupName} group...`)
 
+        setLogs(`Joining the ${groupName} group...`)
         setGroupId(id)
 
         await refreshUsersFunc(id)
 
+        if (userHasJoined(_identity)) {
+            setLogs(`You already Joined the ${groupName} group`)
+
+            setLoading.off()
+            return
+        }
+
         const status = await eligibleCheck(id, prevAddress)
-        console.log(status)
+        console.log("status", status)
 
         if (!status) {
             setLogs(`You are ineligible to join the ${groupName} group`)
@@ -104,8 +90,6 @@ export default function GroupsPage() {
             })
 
             if (response.status === 200) {
-                addUser(_identity.commitment.toString())
-
                 setLogs(`You joined the ${groupName} group Successfully! Share your feedback anonymously🥷`)
             } else {
                 setLogs("Some error occurred, please try again!")
@@ -176,11 +160,11 @@ export default function GroupsPage() {
                     justifyContent="left"
                     colorScheme="primary"
                     px="4"
-                    onClick={() => joinGroup("Titan NFT", "2")}
+                    onClick={() => joinGroup("Titan Users", "2")}
                     isDisabled={_loading || !_identity}
                     leftIcon={<IconAddCircleFill />}
                 >
-                    Join Titan NFT Group
+                    Join Titan Users Group(Tx over 10)
                 </Button>
             </Box>
 

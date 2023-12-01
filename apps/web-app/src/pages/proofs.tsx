@@ -7,7 +7,6 @@ import { useAccount } from "wagmi"
 import getNextConfig from "next/config"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
-import ZKTitanDAO from "../../contract-artifacts/ZKTitanDAO.json"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
@@ -19,8 +18,7 @@ const { publicRuntimeConfig: env } = getNextConfig()
 export default function ProofsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
-    const { _users, _feedback, _groupId, refreshFeedback, addFeedback, refreshFeedbackFunc } =
-        useContext(SemaphoreContext)
+    const { _users, _feedback, _groupId, addFeedback, refreshFeedbackFunc } = useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
     const { address } = useAccount()

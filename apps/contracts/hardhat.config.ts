@@ -29,7 +29,7 @@ function getNetworks(): NetworksUserConfig {
             accounts
         },
         titan_goerli: {
-            url: "https://goerli.optimisim.tokamak.network",
+            url: "https://rpc.titan-goerli.tokamak.network",
             chainId: 5050,
             accounts
         },

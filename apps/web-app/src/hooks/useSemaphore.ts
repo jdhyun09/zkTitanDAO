@@ -1,8 +1,9 @@
-import { SemaphoreEthers } from "@semaphore-protocol/data"
+// import { SemaphoreEthers } from "@semaphore-protocol/data"
 import { BigNumber, utils } from "ethers"
 import getNextConfig from "next/config"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { SemaphoreContextType } from "../context/SemaphoreContext"
+
 
 const { publicRuntimeConfig: env } = getNextConfig()
 
@@ -12,6 +13,7 @@ export default function useSemaphore(): SemaphoreContextType {
     const [_users, setUsers] = useState<any[]>([])
     const [_feedback, setFeedback] = useState<string[]>([])
     const [_groupId, setGroupId] = useState<string>("0")
+    const currentUsers = useRef<string[]>([])
 
     const refreshUsers = useCallback(async (): Promise<void> => {
         const semaphore = new SemaphoreEthers(ethereumNetwork, {
@@ -21,7 +23,7 @@ export default function useSemaphore(): SemaphoreContextType {
         const members = await semaphore.getGroupMembers(_groupId)
 
         setUsers(members)
-    }, [])
+    }, [_groupId])
 
     const refreshUsersFunc = async (groupId: string): Promise<void> => {
         const semaphore = new SemaphoreEthers(ethereumNetwork, {
@@ -29,16 +31,9 @@ export default function useSemaphore(): SemaphoreContextType {
         })
 
         const members = await semaphore.getGroupMembers(groupId)
-
+        currentUsers.current = members
         setUsers(members)
     }
-
-    const addUser = useCallback(
-        (user: any) => {
-            setUsers([..._users, user])
-        },
-        [_users]
-    )
 
     const refreshFeedback = useCallback(async (): Promise<void> => {
         const semaphore = new SemaphoreEthers(ethereumNetwork, {
@@ -71,8 +66,8 @@ export default function useSemaphore(): SemaphoreContextType {
         _users,
         _feedback,
         _groupId,
+        currentUsers,
         refreshUsers,
-        addUser,
         refreshFeedback,
         addFeedback,
         setGroupId,
