@@ -1,5 +1,5 @@
 /* eslint-disable import/no-duplicates */
-import { ChakraProvider, Container, HStack, Spinner, Stack, Text } from "@chakra-ui/react"
+import { ChakraProvider, Container, HStack, Link, Spinner, Stack, Text } from "@chakra-ui/react"
 
 import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
 import { publicProvider } from "wagmi/providers/public"
@@ -17,31 +17,6 @@ import useSemaphore from "../hooks/useSemaphore"
 import theme from "../styles/index"
 
 const { publicRuntimeConfig: env } = getNextConfig()
-
-// const titan: Chain = {
-//     id: 55004,
-//     name: "Titan",
-//     network: "Titan",
-//     nativeCurrency: {
-//         decimals: 18,
-//         name: "ETH",
-//         symbol: "ETH"
-//     },
-//     rpcUrls: {
-//         public: { http: ["https://rpc.titan.tokamak.network"] },
-//         default: { http: ["https://rpc.titan.tokamak.network"] }
-//     },
-//     blockExplorers: {
-//         etherscan: {
-//             name: "Titan Mainnet Explorer",
-//             url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
-//         },
-//         default: {
-//             name: "Titan Mainnet Explorer",
-//             url: process.env.NEXT_PUBLIC_TITAN_BLOCKEXPLORER as string
-//         }
-//     }
-// }
 
 const titan_goerli: Chain = {
     id: 5050,
@@ -146,6 +121,23 @@ export default function App({ Component, pageProps }: AppProps) {
                                 </SemaphoreContext.Provider>
                             </Stack>
                         </Container>
+
+                        <HStack align="center" justify="flex-end" p="2">
+                            <Link 
+                                href={"https://explorer.titan-goerli.tokamak.network/address/0x6A18DAf0b6109a2FaBB547b2cF0984FB36a8868F"} 
+                                isExternal
+                                style={{
+                                    border: "1px solid #8f9097",
+                                    borderRadius: "4px",
+                                    padding: "8px 12px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <Text fontWeight="bold">zkTitanDAO Explorer</Text>
+                            </Link>
+                        </HStack>
 
                         <HStack
                             flexBasis="56px"
