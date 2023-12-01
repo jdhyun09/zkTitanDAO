@@ -3,8 +3,7 @@ import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
 import { generateProof } from "@semaphore-protocol/proof"
 import { BigNumber, utils } from "ethers"
-import { useAccount } from "wagmi"
-import getNextConfig from "next/config"
+import { useAccount, useNetwork } from "wagmi"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
 import Stepper from "../components/Stepper"
@@ -12,8 +11,6 @@ import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
 import IconRefreshLine from "../icons/IconRefreshLine"
-
-const { publicRuntimeConfig: env } = getNextConfig()
 
 export default function ProofsPage() {
     const router = useRouter()
@@ -23,9 +20,14 @@ export default function ProofsPage() {
     const [_identity, setIdentity] = useState<Identity>()
     const { address } = useAccount()
     const [prevAddress, setPrevAddress] = useState<string>("")
+    const { chain } = useNetwork()
 
     useEffect(() => {
         if (!address) {
+            return
+        }
+
+        if(!chain) {
             return
         }
 
@@ -34,10 +36,10 @@ export default function ProofsPage() {
             return
         }
 
-        if (address.toString() !== prevAddress) {
+        if (address.toString() !== prevAddress || chain.id !== 5050) {
             router.push("/")
         }
-    }, [address])
+    }, [address, chain])
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")
@@ -68,6 +70,12 @@ export default function ProofsPage() {
         const feedback = prompt("Please enter your feedback:")
 
         if (feedback && _users) {
+
+            if(feedback.length > 32) {
+                setLogs("🥲 Due to technical issues, feedback must be less than 32 characters.")
+                return
+            }
+
             setLoading.on()
 
             setLogs(`Posting your anonymous feedback...`)

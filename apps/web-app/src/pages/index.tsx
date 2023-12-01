@@ -2,7 +2,7 @@ import { Box, Button, Divider, Heading, HStack, Link, ListItem, OrderedList, Tex
 import { Identity } from "@semaphore-protocol/identity"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
-import { useAccount, useSignMessage } from "wagmi"
+import { useAccount, useSignMessage, useNetwork } from "wagmi"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
@@ -14,21 +14,32 @@ export default function IdentitiesPage() {
     const { signMessageAsync } = useSignMessage()
     const { address } = useAccount()
     const [prevAddress, setPrevAddress] = useState<string>("")
+    const { chain } = useNetwork()
+
 
     useEffect(() => {
         if (!address) {
             return
         }
 
+        if (!chain) {
+            return
+        }
+
+        if(chain.id !== 5050){
+            setLogs("you have to change to titan-goerli network")
+            setIdentity(undefined)
+        }
+
         if (address?.toString() !== prevAddress) {
             setIdentity(undefined)
             setPrevAddress(address?.toString())
         }
-    }, [address])
+    }, [address, chain])
 
     const createIdentity = useCallback(async () => {
         const signMessage = await signMessageAsync({
-            message: "Hii this is for identity"
+            message: "(Demo version)\nBy signing, you can create your own unique identity."
         })
 
         const identity = new Identity(signMessage)
@@ -91,6 +102,7 @@ export default function IdentitiesPage() {
                         px="4"
                         onClick={() => createIdentity()}
                         leftIcon={<IconAddCircleFill />}
+                        disabled={chain?.id !== 5050}
                     >
                         Create identity
                     </Button>

@@ -12,7 +12,7 @@ const infuraAPI = env.INFURA_API_KEY
 const titanGoerliRPC = "https://rpc.titan-goerli.tokamak.network"
 const titanRPC = "https://rpc.titan.tokamak.network"
 
-export default async function eligibleCheck(groupId: string, address: string): Promise<{ result: boolean }> {
+export default async function eligibleCheck(groupId: string, address: string): Promise<boolean> {
     let provider
 
     let tonAddress
@@ -36,43 +36,39 @@ export default async function eligibleCheck(groupId: string, address: string): P
             break
         default:
             console.error("ERROR: Network Error")
-            return { result: false }
+            return false
     }
 
     switch (groupId) {
         case "0":
             console.log("anyone can pass")
-            return { result: true }
+            return true
         case "1":
             if (!tonContract) {
                 console.error("Error: ton contract is wrong")
-                return { result: false }
+                return false
             }
 
             try {
                 const balance = await tonContract.balanceOf(address)
-                console.error(address)
-                console.error(ethers.utils.formatEther(balance))
-                console.log("Ton balance : ", balance)
+                console.log("Ton balance : ", ethers.utils.formatEther(balance))
                 const hasOneTon = parseFloat(ethers.utils.formatEther(balance)) >= 1
-                console.log(hasOneTon)
-                return { result: hasOneTon }
+                return hasOneTon
             } catch (error) {
                 console.error("Error checking balance:", error)
-                return { result: false }
+                return false
             }
         case "2":
             try {
                 const txCount = await provider.getTransactionCount(address)
                 console.log("transaction count : ", txCount)
-                console.log(txCount >= 10)
-                return { result: txCount >= 10 }
+                return txCount >= 10 
             } catch (error) {
                 console.error("Error checking transaction count:", error)
-                return { result: false }
+                return false
             }
         default:
             console.error("Error: The groupId is not supported")
-            return { result: false }
+            return false
     }
 }

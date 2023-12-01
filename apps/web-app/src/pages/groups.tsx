@@ -1,7 +1,6 @@
 import { Box, Button, Divider, Heading, HStack, Link, Text, useBoolean, VStack } from "@chakra-ui/react"
 import { Identity } from "@semaphore-protocol/identity"
-import { useAccount } from "wagmi"
-import getNextConfig from "next/config"
+import { useAccount, useNetwork } from "wagmi"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import Stepper from "../components/Stepper"
@@ -11,7 +10,6 @@ import eligibleCheck from "../hooks/eligibleCheck"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
 import IconRefreshLine from "../icons/IconRefreshLine"
 
-const { publicRuntimeConfig: env } = getNextConfig()
 
 export default function GroupsPage() {
     const router = useRouter()
@@ -21,9 +19,14 @@ export default function GroupsPage() {
     const [_identity, setIdentity] = useState<Identity>()
     const { address } = useAccount()
     const [prevAddress, setPrevAddress] = useState<string>("")
+    const { chain } = useNetwork()
 
     useEffect(() => {
         if (!address) {
+            return
+        }
+
+        if(!chain){
             return
         }
 
@@ -32,10 +35,10 @@ export default function GroupsPage() {
             return
         }
 
-        if (address.toString() !== prevAddress) {
+        if (address.toString() !== prevAddress || chain.id !== 5050) {
             router.push("/")
         }
-    }, [address])
+    }, [address, chain])
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")
