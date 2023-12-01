@@ -6,10 +6,10 @@ import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 contract ZKTitanDAO {
     ISemaphore public semaphore;
     address public owner;
-    uint256[] public titanDAO = [0, 1, 2]; // DAOName: [anyone, ton holders, titan NFT holders]
+    uint256[] public titanDAO = [0, 1, 2]; // DAOName: [anyone, ton holders, titan Users]
 
     event TitanDAOAdded(uint256 groupId);
-    event TitanDAORefreashed(uint256 startedGroupId);
+    event TitanDAORefreshed(uint256 startedGroupId);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not owner");
@@ -50,12 +50,11 @@ contract ZKTitanDAO {
         emit TitanDAOAdded(titanDAO[lastDAOIndex + 1]);
     }
 
-    function refreashTitanDAO() external onlyOwner {
-        // Todo: change to assembly
+    function refreshTitanDAO() external onlyOwner {
         for (uint256 i = 0; i < titanDAO.length; i++) {
             titanDAO[i] += titanDAO.length;
         }
 
-        emit TitanDAORefreashed(titanDAO[0]);
+        emit TitanDAORefreshed(titanDAO[0]);
     }
 }

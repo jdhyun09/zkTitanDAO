@@ -3,24 +3,43 @@ import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
 import { generateProof } from "@semaphore-protocol/proof"
 import { BigNumber, utils } from "ethers"
-import getNextConfig from "next/config"
+import { useAccount, useNetwork } from "wagmi"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
-import Feedback from "../../contract-artifacts/Feedback.json"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
 import IconRefreshLine from "../icons/IconRefreshLine"
 
-const { publicRuntimeConfig: env } = getNextConfig()
-
 export default function ProofsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
-    const { _users, _feedback, refreshFeedback, addFeedback } = useContext(SemaphoreContext)
+    const { _users, _feedback, _groupId, addFeedback, refreshFeedbackFunc } = useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
+    const { address } = useAccount()
+    const [prevAddress, setPrevAddress] = useState<string>("")
+    const { chain } = useNetwork()
+
+    useEffect(() => {
+        if (!address) {
+            return
+        }
+
+        if (!chain) {
+            return
+        }
+
+        if (!prevAddress) {
+            setPrevAddress(address?.toString())
+            return
+        }
+
+        if (address.toString() !== prevAddress || chain.id !== 5050) {
+            router.push("/")
+        }
+    }, [address, chain])
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")
@@ -39,7 +58,11 @@ export default function ProofsPage() {
         }
     }, [_feedback])
 
-    const sendFeedback = useCallback(async () => {
+    const loadFeedback = useCallback(async () => {
+        await refreshFeedbackFunc()
+    }, [_feedback])
+
+    const sendFeedback = async () => {
         if (!_identity) {
             return
         }
@@ -47,47 +70,33 @@ export default function ProofsPage() {
         const feedback = prompt("Please enter your feedback:")
 
         if (feedback && _users) {
+            if (feedback.length > 32) {
+                setLogs("🥲 Due to technical issues, feedback must be less than 32 characters.")
+                return
+            }
+
             setLoading.on()
 
             setLogs(`Posting your anonymous feedback...`)
 
             try {
-                const group = new Group(env.GROUP_ID, 20, _users)
+                const group = new Group(_groupId, 20, _users)
 
                 const signal = BigNumber.from(utils.formatBytes32String(feedback)).toString()
 
-                const { proof, merkleTreeRoot, nullifierHash } = await generateProof(
-                    _identity,
-                    group,
-                    env.GROUP_ID,
-                    signal
-                )
+                const { proof, merkleTreeRoot, nullifierHash } = await generateProof(_identity, group, _groupId, signal)
 
-                let response: any
-
-                if (env.OPENZEPPELIN_AUTOTASK_WEBHOOK) {
-                    response = await fetch(env.OPENZEPPELIN_AUTOTASK_WEBHOOK, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            abi: Feedback.abi,
-                            address: env.FEEDBACK_CONTRACT_ADDRESS,
-                            functionName: "sendFeedback",
-                            functionParameters: [signal, merkleTreeRoot, nullifierHash, proof]
-                        })
+                const response = await fetch("api/ZKTitanDAO", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        feedback: signal,
+                        groupId: _groupId,
+                        merkleTreeRoot,
+                        nullifierHash,
+                        proof
                     })
-                } else {
-                    response = await fetch("api/feedback", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            feedback: signal,
-                            merkleTreeRoot,
-                            nullifierHash,
-                            proof
-                        })
-                    })
-                }
+                })
 
                 if (response.status === 200) {
                     addFeedback(feedback)
@@ -104,7 +113,7 @@ export default function ProofsPage() {
                 setLoading.off()
             }
         }
-    }, [_identity])
+    }
 
     return (
         <>
@@ -127,7 +136,7 @@ export default function ProofsPage() {
                 <Text fontWeight="bold" fontSize="lg">
                     Feedback signals ({_feedback.length})
                 </Text>
-                <Button leftIcon={<IconRefreshLine />} variant="link" color="text.700" onClick={refreshFeedback}>
+                <Button leftIcon={<IconRefreshLine />} variant="link" color="text.700" onClick={loadFeedback}>
                     Refresh
                 </Button>
             </HStack>

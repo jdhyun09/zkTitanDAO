@@ -2,7 +2,7 @@ import { Box, Button, Divider, Heading, HStack, Link, ListItem, OrderedList, Tex
 import { Identity } from "@semaphore-protocol/identity"
 import { useRouter } from "next/router"
 import { useCallback, useContext, useEffect, useState } from "react"
-import { useSignMessage } from "wagmi"
+import { useAccount, useSignMessage, useNetwork } from "wagmi"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
@@ -12,15 +12,34 @@ export default function IdentitiesPage() {
     const { setLogs } = useContext(LogsContext)
     const [_identity, setIdentity] = useState<Identity>()
     const { signMessageAsync } = useSignMessage()
+    const { address } = useAccount()
+    const [prevAddress, setPrevAddress] = useState<string>("")
+    const { chain } = useNetwork()
 
-    useEffect(() => {}, [])
+    useEffect(() => {
+        if (!address) {
+            return
+        }
+
+        if (!chain) {
+            return
+        }
+
+        if (chain.id !== 5050) {
+            setLogs("you have to change to titan-goerli network")
+            setIdentity(undefined)
+        }
+
+        if (address?.toString() !== prevAddress) {
+            setIdentity(undefined)
+            setPrevAddress(address?.toString())
+        }
+    }, [address, chain])
 
     const createIdentity = useCallback(async () => {
         const signMessage = await signMessageAsync({
-            message: "Hi this is for identity"
+            message: "(Demo version)\nBy signing, you can create your own unique identity."
         })
-
-        console.log(signMessage)
 
         const identity = new Identity(signMessage)
 
@@ -82,6 +101,7 @@ export default function IdentitiesPage() {
                         px="4"
                         onClick={() => createIdentity()}
                         leftIcon={<IconAddCircleFill />}
+                        disabled={chain?.id !== 5050}
                     >
                         Create identity
                     </Button>

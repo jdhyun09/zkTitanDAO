@@ -1,23 +1,43 @@
 import { Box, Button, Divider, Heading, HStack, Link, Text, useBoolean, VStack } from "@chakra-ui/react"
 import { Identity } from "@semaphore-protocol/identity"
-import getNextConfig from "next/config"
+import { useAccount, useNetwork } from "wagmi"
 import { useRouter } from "next/router"
-import { useCallback, useContext, useEffect, useState } from "react"
-import Feedback from "../../contract-artifacts/Feedback.json"
+import { useContext, useEffect, useState } from "react"
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
+import eligibleCheck from "../hooks/eligibleCheck"
 import IconAddCircleFill from "../icons/IconAddCircleFill"
 import IconRefreshLine from "../icons/IconRefreshLine"
-
-const { publicRuntimeConfig: env } = getNextConfig()
 
 export default function GroupsPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
-    const { _users, refreshUsers, addUser } = useContext(SemaphoreContext)
+    const { _users, refreshUsers, currentUsers, setGroupId, refreshUsersFunc } = useContext(SemaphoreContext)
     const [_loading, setLoading] = useBoolean()
     const [_identity, setIdentity] = useState<Identity>()
+    const { address } = useAccount()
+    const [prevAddress, setPrevAddress] = useState<string>("")
+    const { chain } = useNetwork()
+
+    useEffect(() => {
+        if (!address) {
+            return
+        }
+
+        if (!chain) {
+            return
+        }
+
+        if (!prevAddress) {
+            setPrevAddress(address?.toString())
+            return
+        }
+
+        if (address.toString() !== prevAddress || chain.id !== 5050) {
+            router.push("/")
+        }
+    }, [address, chain])
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")
@@ -30,55 +50,56 @@ export default function GroupsPage() {
         setIdentity(new Identity(identityString))
     }, [])
 
-    useEffect(() => {
-        if (_users.length > 0) {
-            setLogs(`${_users.length} user${_users.length > 1 ? "s" : ""} retrieved from the group 🤙🏽`)
-        }
-    }, [_users])
+    const userHasJoined = (identity: Identity) => currentUsers.current.includes(identity.commitment.toString())
 
-    const joinGroup = useCallback(async () => {
+    const joinGroup = async (groupName: string, id: string) => {
         if (!_identity) {
             return
         }
 
         setLoading.on()
-        setLogs(`Joining the Feedback group...`)
 
-        let response: any
+        setLogs(`Joining the ${groupName} group...`)
+        setGroupId(id)
 
-        if (env.OPENZEPPELIN_AUTOTASK_WEBHOOK) {
-            response = await fetch(env.OPENZEPPELIN_AUTOTASK_WEBHOOK, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    abi: Feedback.abi,
-                    address: env.FEEDBACK_CONTRACT_ADDRESS,
-                    functionName: "joinGroup",
-                    functionParameters: [_identity.commitment.toString()]
-                })
-            })
-        } else {
-            response = await fetch("api/join", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    identityCommitment: _identity.commitment.toString()
-                })
-            })
+        await refreshUsersFunc(id)
+
+        if (userHasJoined(_identity)) {
+            setLogs(`You already Joined the ${groupName} group`)
+
+            setLoading.off()
+            return
         }
 
-        if (response.status === 200) {
-            addUser(_identity.commitment.toString())
+        const status = await eligibleCheck(id, prevAddress)
+        console.log("status", status)
 
-            setLogs(`You joined the Feedback group event 🎉 Share your feedback anonymously!`)
-        } else {
-            setLogs("Some error occurred, please try again!")
+        if (!status) {
+            setLogs(`You are ineligible to join the ${groupName} group`)
+
+            setLoading.off()
+            return
+        }
+
+        if (!userHasJoined(_identity) && status) {
+            const response = await fetch("api/join", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    identityCommitment: _identity.commitment.toString(),
+                    groupId: id
+                })
+            })
+
+            if (response.status === 200) {
+                setLogs(`You joined the ${groupName} group Successfully! Share your feedback anonymously🥷`)
+            } else {
+                setLogs("Some error occurred, please try again!")
+            }
         }
 
         setLoading.off()
-    }, [_identity])
-
-    const userHasJoined = useCallback((identity: Identity) => _users.includes(identity.commitment.toString()), [_users])
+    }
 
     return (
         <>
@@ -113,11 +134,39 @@ export default function GroupsPage() {
                     justifyContent="left"
                     colorScheme="primary"
                     px="4"
-                    onClick={joinGroup}
-                    isDisabled={_loading || !_identity || userHasJoined(_identity)}
+                    onClick={() => joinGroup("Anyone", "0")}
+                    isDisabled={_loading || !_identity}
                     leftIcon={<IconAddCircleFill />}
                 >
-                    Join group
+                    Join Anyone Group
+                </Button>
+            </Box>
+            <Box pb="5">
+                <Button
+                    w="100%"
+                    fontWeight="bold"
+                    justifyContent="left"
+                    colorScheme="primary"
+                    px="4"
+                    onClick={() => joinGroup("Ton holders", "1")}
+                    isDisabled={_loading || !_identity}
+                    leftIcon={<IconAddCircleFill />}
+                >
+                    Join Ton holders Group
+                </Button>
+            </Box>
+            <Box pb="5">
+                <Button
+                    w="100%"
+                    fontWeight="bold"
+                    justifyContent="left"
+                    colorScheme="primary"
+                    px="4"
+                    onClick={() => joinGroup("Titan Users", "2")}
+                    isDisabled={_loading || !_identity}
+                    leftIcon={<IconAddCircleFill />}
+                >
+                    Join Titan Users Group(Tx over 10)
                 </Button>
             </Box>
 
