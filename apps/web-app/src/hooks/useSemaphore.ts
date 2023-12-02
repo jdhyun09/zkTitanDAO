@@ -1,4 +1,3 @@
-// import { SemaphoreEthers } from "@semaphore-protocol/data"
 import { BigNumber, utils } from "ethers"
 import { useCallback, useRef, useState } from "react"
 import { SemaphoreContextType } from "../context/SemaphoreContext"
