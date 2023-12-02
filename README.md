@@ -7,6 +7,9 @@
 | The repository is divided into two components: [web app](./apps/web-app) and [contracts](./apps/contracts). The app allows users to create their own Semaphore identity, join a group and then send their feedback anonymously (currently on titan Goerli). |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
+# OverView
+![zkTitanDAO](/apps/web-app/public/zkTitanDAO_overview.png)
+
 ## 🛠 Install
 
 Use this repository as a Github [template](https://github.com/semaphore-protocol/boilerplate/generate).
