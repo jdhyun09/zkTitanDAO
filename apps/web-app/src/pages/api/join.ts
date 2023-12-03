@@ -19,10 +19,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const signer = new Wallet(ethereumPrivateKey, provider)
     const contract = new Contract(contractAddress, ZKTitanDAO.abi, signer)
 
+
+    console.error(signer.address)
+    console.error(contract.address)
+
     const { identityCommitment, groupId } = req.body
+
+    console.error(identityCommitment, groupId)
 
     try {
         const transaction = await contract.joinGroup(groupId, identityCommitment)
+        console.error(transaction)
 
         await transaction.wait()
 

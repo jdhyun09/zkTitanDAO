@@ -22,6 +22,8 @@ export default function GroupsPage() {
 
     useEffect(() => {
         if (!address) {
+            setIdentity(undefined)
+            router.push("/")
             return
         }
 

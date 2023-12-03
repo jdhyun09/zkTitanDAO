@@ -15,9 +15,12 @@ export default function IdentitiesPage() {
     const { address } = useAccount()
     const [prevAddress, setPrevAddress] = useState<string>("")
     const { chain } = useNetwork()
+    const [_status, setStatus] = useState<boolean>(true)
 
     useEffect(() => {
         if (!address) {
+            setIdentity(undefined)
+            setStatus(true)
             return
         }
 
@@ -25,11 +28,15 @@ export default function IdentitiesPage() {
             return
         }
 
+        setStatus(false)
+        setLogs("Create your own Identity")
+
         if (chain.id !== 5050) {
             setLogs("you have to change to titan-goerli network")
             setIdentity(undefined)
+            setStatus(true)
         }
-
+        
         if (address?.toString() !== prevAddress) {
             setIdentity(undefined)
             setPrevAddress(address?.toString())
@@ -101,7 +108,7 @@ export default function IdentitiesPage() {
                         px="4"
                         onClick={() => createIdentity()}
                         leftIcon={<IconAddCircleFill />}
-                        disabled={chain?.id !== 5050}
+                        disabled={_status}
                     >
                         Create identity
                     </Button>

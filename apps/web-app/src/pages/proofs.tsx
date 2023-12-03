@@ -24,6 +24,8 @@ export default function ProofsPage() {
 
     useEffect(() => {
         if (!address) {
+            setIdentity(undefined)
+            router.push("/")
             return
         }
 

@@ -1,6 +1,6 @@
 /* eslint-disable import/no-duplicates */
 import { ChakraProvider, Container, HStack, Link, Spinner, Stack, Text } from "@chakra-ui/react"
-
+import getNextConfig from "next/config"
 import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
 import { publicProvider } from "wagmi/providers/public"
 import "@rainbow-me/rainbowkit/styles.css"
@@ -14,6 +14,8 @@ import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
 import useSemaphore from "../hooks/useSemaphore"
 import theme from "../styles/index"
+
+const { publicRuntimeConfig: env } = getNextConfig()
 
 const titan_goerli: Chain = {
     id: 5050,
@@ -68,25 +70,24 @@ export default function App({ Component, pageProps }: AppProps) {
     useEffect(() => {
         semaphore.refreshUsers()
         semaphore.refreshFeedback()
-    }, [semaphore._groupId])
+    }, [])
 
     return (
         <>
             <Head>
                 <title>zkTitanDAO Demo</title>
                 <link rel="icon" href="/favicon.ico" />
-                <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
                 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
                 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
                 <link rel="manifest" href="/manifest.json" />
                 <meta name="theme-color" content="#ebedff" />
             </Head>
-            <ChakraProvider theme={theme}>
-                <WagmiConfig config={wagmiConfig}>
-                    <RainbowKitProvider chains={chains}>
+            <WagmiConfig config={wagmiConfig}>
+                <RainbowKitProvider chains={chains} initialChain={titan_goerli}>
+                    <ChakraProvider theme={theme}>
                         <HStack align="center" justify="right" p="2">
                             <div style={{ display: "flex", justifyContent: "flex-end", padding: 12 }}>
-                                <ConnectButton />
+                                <ConnectButton chainStatus = "name"/>
                             </div>
                         </HStack>
 
@@ -108,7 +109,7 @@ export default function App({ Component, pageProps }: AppProps) {
                         <HStack align="center" justify="flex-end" p="2">
                             <Link
                                 href={
-                                    "https://explorer.titan-goerli.tokamak.network/address/0x6A18DAf0b6109a2FaBB547b2cF0984FB36a8868F"
+                                    `https://explorer.titan-goerli.tokamak.network/address/${env.ZKTITANDAO_CONTRACT_ADDRESS}`
                                 }
                                 isExternal
                                 style={{
@@ -136,9 +137,9 @@ export default function App({ Component, pageProps }: AppProps) {
                             {_logs.endsWith("...") && <Spinner color="primary.400" />}
                             <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
                         </HStack>
-                    </RainbowKitProvider>
-                </WagmiConfig>
-            </ChakraProvider>
+                    </ChakraProvider>
+                </RainbowKitProvider>
+            </WagmiConfig>
         </>
     )
 }
