@@ -27,7 +27,7 @@ const nextConfig = withPWA({
     publicRuntimeConfig: {
         DEFAULT_NETWORK: process.env.DEFAULT_NETWORK,
         ZKTITANDAO_CONTRACT_ADDRESS: process.env.ZKTITANDAO_CONTRACT_ADDRESS,
-        SEMAPHORE_CONTRACT_ADDRESS: process.env.SEMAPHORE_CONTRACT_ADDRESS,
+        SEMAPHORE_CONTRACT_ADDRESS: process.env.SEMAPHORE_CONTRACT_ADDRESS
     }
 })
 

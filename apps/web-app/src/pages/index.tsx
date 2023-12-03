@@ -36,7 +36,7 @@ export default function IdentitiesPage() {
             setIdentity(undefined)
             setStatus(true)
         }
-        
+
         if (address?.toString() !== prevAddress) {
             setIdentity(undefined)
             setPrevAddress(address?.toString())

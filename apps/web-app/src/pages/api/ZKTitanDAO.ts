@@ -19,12 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const signer = new Wallet(ethereumPrivateKey, provider)
     const contract = new Contract(contractAddress, ZKTitanDAO.abi, signer)
 
-    console.error(signer.address)
-    console.error(contract.address)
-
     const { feedback, groupId, merkleTreeRoot, nullifierHash, proof } = req.body
-
-    console.error(feedback, groupId, merkleTreeRoot, nullifierHash, proof)
 
     try {
         const transaction = await contract.sendFeedback(
@@ -35,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             groupId,
             proof
         )
-        console.error(transaction)
+
         await transaction.wait()
 
         res.status(200).end()

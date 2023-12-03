@@ -70,7 +70,7 @@ export default function App({ Component, pageProps }: AppProps) {
     useEffect(() => {
         semaphore.refreshUsers()
         semaphore.refreshFeedback()
-    }, [])
+    }, [semaphore._groupId])
 
     return (
         <>
@@ -87,7 +87,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     <ChakraProvider theme={theme}>
                         <HStack align="center" justify="right" p="2">
                             <div style={{ display: "flex", justifyContent: "flex-end", padding: 12 }}>
-                                <ConnectButton chainStatus = "name"/>
+                                <ConnectButton chainStatus="name" />
                             </div>
                         </HStack>
 
@@ -108,9 +108,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
                         <HStack align="center" justify="flex-end" p="2">
                             <Link
-                                href={
-                                    `https://explorer.titan-goerli.tokamak.network/address/${env.ZKTITANDAO_CONTRACT_ADDRESS}`
-                                }
+                                href={`https://explorer.titan-goerli.tokamak.network/address/${env.ZKTITANDAO_CONTRACT_ADDRESS}`}
                                 isExternal
                                 style={{
                                     border: "1px solid #8f9097",

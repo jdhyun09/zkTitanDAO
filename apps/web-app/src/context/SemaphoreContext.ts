@@ -17,7 +17,7 @@ export default React.createContext<SemaphoreContextType>({
     _users: [],
     _feedback: [],
     _groupId: "",
-    currentUsers: {current: []},
+    currentUsers: { current: [] },
     refreshUsers: () => Promise.resolve(),
     refreshFeedback: () => Promise.resolve(),
     addFeedback: () => {},

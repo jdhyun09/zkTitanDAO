@@ -5,9 +5,10 @@
 </p>
 
 | The repository is divided into two components: [web app](./apps/web-app) and [contracts](./apps/contracts). The app allows users to create their own Semaphore identity, join a group and then send their feedback anonymously (currently on titan Goerli). |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 # OverView
+
 ![zkTitanDAO](/apps/web-app/public/zkTitanDAO_overview.png)
 
 ## 🛠 Install
@@ -39,12 +40,14 @@ and add your environment variables or run the app in a local network.
 ### Local server
 
 ### ⚠️ Caution
->Currently, zktitanDAO cannot be tested on localhost.
->If you want to test it locally, you must deploy the contract to titan_goerli.
+
+> Currently, zktitanDAO cannot be tested on localhost.
+> If you want to test it locally, you must deploy the contract to titan_goerli.
 
 You can start your app locally with:
 
 ### First, Deploy the contract only once(It's not localhost.)
+
 Deploy the contract
 
 1. Go to the `apps/contracts` directory and deploy your contract:
@@ -57,12 +60,14 @@ yarn deploy --network titan_goerli
 
 3. Copy your contract artifacts from `apps/contracts/build/contracts/contracts` folder to `apps/web-app/contract-artifacts` folders manually. Or run `yarn copy:contract-artifacts` in the project root to do it automatically.
 
-
 ### Second, Run the frontend locally.
+
 ```bash
 yarn dev:web-app
 ```
+
 ---
+
 ### Code quality and formatting
 
 Run [ESLint](https://eslint.org/) to analyze the code and catch bugs:
