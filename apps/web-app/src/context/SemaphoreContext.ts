@@ -1,10 +1,10 @@
-import React from "react"
+import React, { MutableRefObject } from "react"
 
 export type SemaphoreContextType = {
     _users: string[]
     _feedback: string[]
     _groupId: string
-    currentUsers: string[]
+    currentUsers: MutableRefObject<string[]>
     refreshUsers: () => Promise<void>
     refreshFeedback: () => Promise<void>
     addFeedback: (feedback: string) => void
@@ -17,7 +17,7 @@ export default React.createContext<SemaphoreContextType>({
     _users: [],
     _feedback: [],
     _groupId: "",
-    currentUsers: [],
+    currentUsers: {current: []},
     refreshUsers: () => Promise.resolve(),
     refreshFeedback: () => Promise.resolve(),
     addFeedback: () => {},

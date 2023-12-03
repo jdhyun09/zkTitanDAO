@@ -62,7 +62,11 @@ export default function GroupsPage() {
         setLogs(`Joining the ${groupName} group...`)
         setGroupId(id)
 
+        console.log("previous users :",currentUsers)
+
         await refreshUsersFunc(id)
+
+        console.log("current users :",currentUsers)
 
         if (userHasJoined(_identity)) {
             setLogs(`You already Joined the ${groupName} group`)
@@ -72,7 +76,7 @@ export default function GroupsPage() {
         }
 
         const status = await eligibleCheck(id, prevAddress)
-        console.log("status", status)
+        console.log("status :", status)
 
         if (!status) {
             setLogs(`You are ineligible to join the ${groupName} group`)

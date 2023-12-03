@@ -7,7 +7,6 @@ import "@rainbow-me/rainbowkit/styles.css"
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import type { AppProps } from "next/app"
-import getNextConfig from "next/config"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -15,8 +14,6 @@ import LogsContext from "../context/LogsContext"
 import SemaphoreContext from "../context/SemaphoreContext"
 import useSemaphore from "../hooks/useSemaphore"
 import theme from "../styles/index"
-
-const { publicRuntimeConfig: env } = getNextConfig()
 
 const titan_goerli: Chain = {
     id: 5050,
@@ -72,20 +69,6 @@ export default function App({ Component, pageProps }: AppProps) {
         semaphore.refreshUsers()
         semaphore.refreshFeedback()
     }, [semaphore._groupId])
-
-    // function getExplorerLink(network: SupportedNetwork, address: string) {
-    //     switch (network) {
-    //         case "goerli":
-    //         case "sepolia":
-    //             return `https://${network}.etherscan.io/address/${address}`
-    //         case "arbitrum-goerli":
-    //             return `https://goerli.arbiscan.io/address/${address}`
-    //         default:
-    //             return ""
-    //     }
-    // }
-
-    // console.log(signMessage)
 
     return (
         <>
