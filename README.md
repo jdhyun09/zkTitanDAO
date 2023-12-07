@@ -67,8 +67,11 @@ yarn dev:web-app
 ```
 
 ---
+
 ### Contract test
+
 1. Go to the `apps/contracts` directory and deploy your contract:
+
 ```bash
 yarn test
 # or
@@ -76,7 +79,6 @@ yarn test:report-gas
 # or
 yarn test:coverage
 ```
-
 
 ### Code quality and formatting
 
