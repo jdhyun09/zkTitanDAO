@@ -86,7 +86,7 @@ export default function IdentitiesPage() {
 
             {_identity ? (
                 <Box py="6" whiteSpace="nowrap">
-                    <Box p="5" borderWidth={1} borderColor="gray.500" borderRadius="4px">
+                    <Box p="5" borderWidth={1} borderColor="gray.500" borderRadius="4px" backgroundColor="white">
                         <Text textOverflow="ellipsis" overflow="hidden">
                             Trapdoor: {_identity.trapdoor.toString()}
                         </Text>

@@ -161,7 +161,7 @@ export default function ProofsPage() {
             {_feedback.length > 0 && (
                 <VStack spacing="3" align="left">
                     {_feedback.map((f, i) => (
-                        <HStack key={i} p="3" borderWidth={1}>
+                        <HStack key={i} p="3" borderWidth={1} backgroundColor="white">
                             <Text>{f}</Text>
                         </HStack>
                     ))}

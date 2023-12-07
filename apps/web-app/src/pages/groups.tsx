@@ -179,7 +179,7 @@ export default function GroupsPage() {
             {_users.length > 0 && (
                 <VStack spacing="3" px="3" align="left" maxHeight="300px" overflowY="scroll">
                     {_users.map((user, i) => (
-                        <HStack key={i} p="3" borderWidth={1} whiteSpace="nowrap">
+                        <HStack key={i} p="3" borderWidth={1} whiteSpace="nowrap" backgroundColor="white">
                             <Text textOverflow="ellipsis" overflow="hidden">
                                 {user}
                             </Text>
