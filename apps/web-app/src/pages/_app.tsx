@@ -1,5 +1,5 @@
 /* eslint-disable import/no-duplicates */
-import { ChakraProvider, Container, HStack, Link, Spinner, Stack, Text } from "@chakra-ui/react"
+import { ChakraProvider, Container, HStack, Link, Spinner, Stack, Text, Image } from "@chakra-ui/react"
 import getNextConfig from "next/config"
 import { WagmiConfig, createConfig, configureChains, Chain } from "wagmi"
 import { publicProvider } from "wagmi/providers/public"
@@ -85,56 +85,72 @@ export default function App({ Component, pageProps }: AppProps) {
             <WagmiConfig config={wagmiConfig}>
                 <RainbowKitProvider chains={chains} initialChain={titan_goerli}>
                     <ChakraProvider theme={theme}>
-                        <HStack align="center" justify="right" p="2">
-                            <div style={{ display: "flex", justifyContent: "flex-end", padding: 12 }}>
-                                <ConnectButton chainStatus="name" />
-                            </div>
-                        </HStack>
-
-                        <Container maxW="lg" flex="1" display="flex" alignItems="center">
-                            <Stack py="8" display="flex" width="100%">
-                                <SemaphoreContext.Provider value={semaphore}>
-                                    <LogsContext.Provider
-                                        value={{
-                                            _logs,
-                                            setLogs
-                                        }}
-                                    >
-                                        <Component {...pageProps} />
-                                    </LogsContext.Provider>
-                                </SemaphoreContext.Provider>
-                            </Stack>
-                        </Container>
-
-                        <HStack align="center" justify="flex-end" p="2">
-                            <Link
-                                href={`https://explorer.titan-goerli.tokamak.network/address/${env.ZKTITANDAO_CONTRACT_ADDRESS}`}
-                                isExternal
-                                style={{
-                                    border: "1px solid #8f9097",
-                                    borderRadius: "4px",
-                                    padding: "8px 12px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center"
-                                }}
-                            >
-                                <Text fontWeight="bold">zkTitanDAO Explorer</Text>
-                            </Link>
-                        </HStack>
-
-                        <HStack
-                            flexBasis="56px"
-                            borderTop="1px solid #8f9097"
-                            backgroundColor="#DAE0FF"
-                            align="center"
-                            justify="center"
-                            spacing="4"
-                            p="4"
+                        <Container
+                            display="flex"
+                            flexDirection="column"
+                            minHeight="100vh"
+                            maxW="100%"
+                            p={0}
+                            backgroundColor="gray.50"
                         >
-                            {_logs.endsWith("...") && <Spinner color="primary.400" />}
-                            <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
-                        </HStack>
+                            <HStack align="center" justify="space-between" p="2" width="100%">
+                                <HStack>
+                                    <Image src="/titan.png" alt="Titan Logo" boxSize="50px" />
+                                    <Text fontSize="xl" fontWeight="bold">
+                                        zkTitanDAO
+                                    </Text>
+                                </HStack>
+                                <div style={{ display: "flex", justifyContent: "flex-end", padding: 12 }}>
+                                    <ConnectButton chainStatus="name" />
+                                </div>
+                            </HStack>
+
+                            <Container maxW="lg" flex="1" display="flex" alignItems="center">
+                                <Stack py="8" display="flex" width="100%">
+                                    <SemaphoreContext.Provider value={semaphore}>
+                                        <LogsContext.Provider
+                                            value={{
+                                                _logs,
+                                                setLogs
+                                            }}
+                                        >
+                                            <Component {...pageProps} />
+                                        </LogsContext.Provider>
+                                    </SemaphoreContext.Provider>
+                                </Stack>
+                            </Container>
+
+                            <HStack align="center" justify="flex-end" p="2">
+                                <Link
+                                    href={`https://explorer.titan-goerli.tokamak.network/address/${env.ZKTITANDAO_CONTRACT_ADDRESS}`}
+                                    isExternal
+                                    style={{
+                                        border: "1px solid #8f9097",
+                                        borderRadius: "4px",
+                                        padding: "8px 12px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        backgroundColor: "white"
+                                    }}
+                                >
+                                    <Text fontWeight="bold">zkTitanDAO Explorer</Text>
+                                </Link>
+                            </HStack>
+
+                            <HStack
+                                flexBasis="56px"
+                                borderTop="1px solid #8f9097"
+                                backgroundColor="#83BAF7"
+                                align="center"
+                                justify="center"
+                                spacing="4"
+                                p="4"
+                            >
+                                {_logs.endsWith("...") && <Spinner color="primary.400" />}
+                                <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
+                            </HStack>
+                        </Container>
                     </ChakraProvider>
                 </RainbowKitProvider>
             </WagmiConfig>
