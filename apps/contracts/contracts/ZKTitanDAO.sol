@@ -77,12 +77,12 @@ contract ZKTitanDAO {
     /// @dev Adds a new TitanDAO group.
     /// Can only be called by the contract owner.
     function addTitanDAO() external onlyOwner {
-        uint256 lastDAOIndex = titanDAO.length - 1;
-        titanDAO.push(titanDAO[lastDAOIndex] + 1);
+        uint256 newGroupId = titanDAO[titanDAO.length - 1] + 1;
+        titanDAO.push(newGroupId);
 
-        semaphore.createGroup(titanDAO[lastDAOIndex + 1], 20, address(this));
+        semaphore.createGroup(newGroupId, 20, address(this));
 
-        emit TitanDAOAdded(titanDAO[lastDAOIndex + 1]);
+        emit TitanDAOAdded(newGroupId);
     }
 
     /// @dev Refreshes the IDs of all TitanDAO groups.
@@ -101,6 +101,7 @@ contract ZKTitanDAO {
     /// @param newOwner The address to which ownership will be transferred.
     function transferOwnership(address newOwner) external onlyOwner {
         require(newOwner != address(0), "New owner cannot be zero address");
+        require(newOwner != owner, "New owner cannot be the current owner");
 
         emit OwnerChanged(owner, newOwner);
         owner = newOwner;
